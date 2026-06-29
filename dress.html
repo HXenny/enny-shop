@@ -5,25 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>ENNY CHINA - Collection</title>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, sans-serif; }
-        body { background:#f5f5f7; padding-bottom:100px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, sans-serif; }
+        body {
+            background: #ffffff;
+            padding-bottom: 30px;
+        }
 
+        /* ----- 顶部导航栏：只有返回按钮（左） + 语言切换（右） ----- */
         .top-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 16px;
-            background: white;
+            padding: 12px 16px;
+            background: #ffffff;
             position: sticky;
             top: 0;
-            z-index: 20;
-            border-bottom: 1px solid #eee;
+            z-index: 10;
+            border-bottom: 1px solid #f0f0f0;
         }
         .top-bar .back-link {
-            font-size: 24px;
+            font-size: 28px;
             color: #333;
             text-decoration: none;
             font-weight: 300;
+            line-height: 1;
         }
         .top-bar .lang-group {
             display: flex;
@@ -47,88 +52,69 @@
         }
         .top-bar .lang-group button:active { transform: scale(0.9); }
 
-        .main-img-wrap { width:100%; background:white; }
-        .main-img-wrap img { width:100%; display:block; aspect-ratio:1/1; object-fit:contain; background:#fafafa; }
+        /* ----- 每个商品组 ----- */
+        .product-group {
+            margin: 20px 0;
+            background: #ffffff;
+        }
 
-        .thumb-row {
-            display: flex;
-            gap: 8px;
-            padding: 12px 16px;
-            background:white;
-            overflow-x: auto;
-            border-bottom:1px solid #eee;
+        /* 主图：全屏宽度 */
+        .product-group .main-img {
+            width: 100%;
+            display: block;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            background: #f8f8f8;
+            border-radius: 0; /* 如需圆角可加，但仿1688通常无圆角 */
         }
-        .thumb-row img {
-            width: 80px;
-            height: 80px;
-            object-fit:cover;
-            border-radius: 6px;
-            border:2px solid transparent;
-            flex-shrink:0;
-            cursor:pointer;
-            transition:0.2s;
-        }
-        .thumb-row img.active-thumb { border-color:#007aff; }
 
-        .product-info {
-            padding: 14px 16px 8px;
-            background:white;
-            border-bottom:1px solid #eee;
+        /* NEW 标签：居中，大号，亮色 */
+        .product-group .new-label {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            color: #ff3b9f;
+            padding: 12px 0 8px 0;
+            background: #ffffff;
+            text-shadow: 0 0 20px rgba(255, 59, 159, 0.15);
         }
-        .product-info .name { font-size:18px; font-weight:600; color:#1a1a1a; }
-        .product-info .price { font-size:20px; font-weight:700; color:#ff3b9f; margin-top:4px; }
-        .product-info .price small { font-size:14px; font-weight:400; color:#888; margin-left:8px; }
-        .product-info .meta { font-size:13px; color:#999; margin-top:4px; }
 
-        .all-items {
-            padding: 14px 16px;
-            background:white;
-            margin-top:12px;
-        }
-        .all-items .title { font-size:15px; font-weight:600; color:#333; margin-bottom:10px; }
-        .grid {
+        /* 细节图网格：两列，自动换行 */
+        .product-group .detail-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            padding: 0 4px;
         }
-        .grid .item {
-            border-radius:8px;
-            overflow:hidden;
-            border:2px solid transparent;
-            position:relative;
-            cursor:pointer;
-            background:#f8f9fa;
+        .product-group .detail-grid img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            background: #f8f8f8;
+            border-radius: 4px;
+            display: block;
         }
-        .grid .item.active-item { border-color:#007aff; }
-        .grid .item img { width:100%; display:block; aspect-ratio:1/1; object-fit:cover; }
-        .grid .item .item-name { font-size:11px; padding:4px 6px; color:#333; text-align:center; background:white; }
-        .grid .item .select-badge {
-            position:absolute; top:4px; right:4px;
-            background:rgba(0,0,0,0.6); color:white;
-            border:none; border-radius:20px;
-            padding:0 10px; font-size:12px;
-            cursor:pointer; z-index:2;
-        }
-        .grid .item.selected .select-badge { background:#007aff; }
 
-        .footer-bar {
-            position:fixed; bottom:0; left:0; right:0;
-            background:white; padding:12px 20px;
-            box-shadow:0 -4px 20px rgba(0,0,0,0.08);
-            display:flex; justify-content:space-between; align-items:center;
-            z-index:20; border-top:1px solid #f0f0f0;
+        /* 商品组之间留白 */
+        .product-group:not(:last-child) {
+            margin-bottom: 30px;
         }
-        .footer-bar .left .usd { font-size:20px; font-weight:700; color:#1a1a1a; }
-        .footer-bar .left .cny { font-size:13px; color:#888; }
-        .footer-bar .right { background:#f0f0f0; padding:6px 16px; border-radius:20px; font-size:14px; color:#333; }
-        .empty { text-align:center; padding:40px; color:#aaa; }
+
+        /* 无商品时的提示 */
+        .empty-hint {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
 
+    <!-- ===== 顶部导航 ===== -->
     <div class="top-bar">
-        <!-- 返回链接已改为 ./index.html + target="_self" -->
-        <a href="./index.html" class="back-link" id="backLink" target="_self">‹</a>
+        <a href="./index.html" class="back-link" target="_self">‹</a>
         <div class="lang-group" id="langGroup">
             <button data-lang="en" class="active-lang">EN</button>
             <button data-lang="zh-CN">简</button>
@@ -139,241 +125,145 @@
         </div>
     </div>
 
-    <div class="main-img-wrap">
-        <img id="mainImage" src="" alt="main">
-    </div>
-
-    <div class="thumb-row" id="thumbRow"></div>
-
-    <div class="product-info">
-        <div class="name" id="productName">-</div>
-        <div class="price" id="productPrice">$0.00 <small>≈ ¥0</small></div>
-        <div class="meta" id="productMeta">🔥 0 sold · 👁️ 0 views</div>
-    </div>
-
-    <div class="all-items">
-        <div class="title" id="gridTitle">👇 Switch Styles</div>
-        <div class="grid" id="allGrid"></div>
-    </div>
-
-    <div class="footer-bar">
-        <div class="left">
-            <div class="usd" id="totalUsd">$0.00</div>
-            <div class="cny" id="totalCny">≈ ¥0.00</div>
-        </div>
-        <div class="right" id="totalCount">Selected 0</div>
-    </div>
+    <!-- ===== 商品容器 ===== -->
+    <div id="productContainer"></div>
 
     <script>
-        // ==============================================================
-        // ⭐⭐⭐ 商品数据（多语言名称）⭐⭐⭐
-        // ==============================================================
+        // ================================================================
+        // ⭐⭐⭐ 商品数据（在这里上架/修改）⭐⭐⭐
+        // 每个商品：sort（数字越大越靠前），mainImg（主图），detailImgs（细节图数组，2~10张）
+        // 图片路径格式：images/你的图片文件名.jpg（支持手机原图，无需改名）
+        // ================================================================
         const products = [
-            { 
-                sort: 6, id:'p01', 
-                name: { en:'Bohemian Floral Maxi Dress', 'zh-CN':'波西米亚印花长裙', 'zh-TW':'波西米亞印花長裙', ru:'Богемное платье с цветами', fr:'Robe maxi bohème florale', ar:'فستان ماكسي بوهيمي مزهر' },
-                priceUsd:35.00, sales:156, views:823,
-                mainImg:'images/print_01_main.jpg',
-                detailImgs:['images/print_01_1.jpg','images/print_01_2.jpg','images/print_01_3.jpg']
+            // ----- 示例商品（你可以删掉换成自己的） -----
+            {
+                sort: 6,
+                mainImg: 'images/dress_01_main.jpg',
+                detailImgs: [
+                    'images/dress_01_detail_1.jpg',
+                    'images/dress_01_detail_2.jpg',
+                    'images/dress_01_detail_3.jpg',
+                    'images/dress_01_detail_4.jpg'  // 可多可少
+                ]
             },
-            { 
-                sort: 5, id:'s01', 
-                name: { en:'Pleated A-line Skirt', 'zh-CN':'百褶半身裙', 'zh-TW':'百褶半身裙', ru:'Плиссированная юбка', fr:'Jupe plissée', ar:'تنورة مطوية' },
-                priceUsd:18.00, sales:98, views:412,
-                mainImg:'images/skirt_01_main.jpg',
-                detailImgs:['images/skirt_01_1.jpg','images/skirt_01_2.jpg']
+            {
+                sort: 5,
+                mainImg: 'images/skirt_01_main.jpg',
+                detailImgs: [
+                    'images/skirt_01_detail_1.jpg',
+                    'images/skirt_01_detail_2.jpg'
+                ]
             },
-            { 
-                sort: 4, id:'y01', 
-                name: { en:'High-Waist Yoga Leggings', 'zh-CN':'高腰裸感瑜伽裤', 'zh-TW':'高腰裸感瑜伽褲', ru:'Леггинсы для йоги с высокой талией', fr:'Legging yoga taille haute', ar:'طماق يوجا عالي الخصر' },
-                priceUsd:22.80, sales:203, views:1205,
-                mainImg:'images/yoga_01_main.jpg',
-                detailImgs:['images/yoga_01_1.jpg']
+            {
+                sort: 4,
+                mainImg: 'images/yoga_01_main.jpg',
+                detailImgs: [
+                    'images/yoga_01_detail_1.jpg'
+                ]
             },
-            { 
-                sort: 3, id:'t01', 
-                name: { en:'Cotton Graphic T-Shirt', 'zh-CN':'纯棉印花T恤', 'zh-TW':'純棉印花T恤', ru:'Хлопковая футболка с принтом', fr:'T-shirt en coton imprimé', ar:'تيشيرت قطني مطبوع' },
-                priceUsd:12.00, sales:345, views:2100,
-                mainImg:'images/tshirt_01_main.jpg',
-                detailImgs:['images/tshirt_01_1.jpg','images/tshirt_01_2.jpg']
+            {
+                sort: 3,
+                mainImg: 'images/tshirt_01_main.jpg',
+                detailImgs: [
+                    'images/tshirt_01_detail_1.jpg',
+                    'images/tshirt_01_detail_2.jpg',
+                    'images/tshirt_01_detail_3.jpg'
+                ]
             },
-            { 
-                sort: 2, id:'d02', 
-                name: { en:'Puff-Sleeve Mini Dress', 'zh-CN':'泡泡袖淑女裙', 'zh-TW':'泡泡袖淑女裙', ru:'Платье с рукавами-фонариками', fr:'Robe à manches ballon', ar:'فستان بأكمام منفوخة' },
-                priceUsd:32.00, sales:67, views:289,
-                mainImg:'images/dress_02_main.jpg',
-                detailImgs:['images/dress_02_1.jpg']
+            {
+                sort: 2,
+                mainImg: 'images/dress_02_main.jpg',
+                detailImgs: [
+                    'images/dress_02_detail_1.jpg',
+                    'images/dress_02_detail_2.jpg'
+                ]
             },
-            { 
-                sort: 1, id:'d01', 
-                name: { en:'French Floral Dress', 'zh-CN':'法式碎花连衣裙', 'zh-TW':'法式碎花連衣裙', ru:'Платье с французским цветочным принтом', fr:'Robe fleurie française', ar:'فستان زهري فرنسي' },
-                priceUsd:28.50, sales:128, views:556,
-                mainImg:'images/dress_01_main.jpg',
-                detailImgs:['images/dress_01_1.jpg','images/dress_01_2.jpg']
+            {
+                sort: 1,
+                mainImg: 'images/print_01_main.jpg',
+                detailImgs: [
+                    'images/print_01_detail_1.jpg',
+                    'images/print_01_detail_2.jpg',
+                    'images/print_01_detail_3.jpg',
+                    'images/print_01_detail_4.jpg',
+                    'images/print_01_detail_5.jpg'
+                ]
             },
-            // ⬇️ 上新品时复制下面模板，贴到最上面，改 sort、id、name 六个语言、图片路径
-            // { sort: 999, id:'new01', name:{en:'New Style', 'zh-CN':'新款', 'zh-TW':'新款', ru:'Новинка', fr:'Nouveau', ar:'جديد'}, priceUsd:39.99, sales:0, views:0, mainImg:'images/新款主图.jpg', detailImgs:['images/细节1.jpg'] },
+
+            // ⬇️ 上新品时复制下面模板，贴到最上面，改 sort（填最大数字）和图片路径
+            // {
+            //     sort: 999,
+            //     mainImg: 'images/新款主图.jpg',
+            //     detailImgs: [
+            //         'images/新款细节1.jpg',
+            //         'images/新款细节2.jpg',
+            //         // ... 最多10张
+            //     ]
+            // },
         ];
+        // ================================================================
 
-        const staticText = {
-            'en': {
-                backLink: '‹',
-                gridTitle: '👇 Switch Styles',
-                selectedCount: 'Selected {n}',
-                sold: 'sold',
-                views: 'views',
-                cnyLabel: '≈ ¥'
-            },
-            'zh-CN': {
-                backLink: '‹ 返回',
-                gridTitle: '👇 切换款式',
-                selectedCount: '已选 {n} 件',
-                sold: '销量',
-                views: '浏览',
-                cnyLabel: '≈ ¥'
-            },
-            'zh-TW': {
-                backLink: '‹ 返回',
-                gridTitle: '👇 切換款式',
-                selectedCount: '已選 {n} 件',
-                sold: '銷量',
-                views: '瀏覽',
-                cnyLabel: '≈ ¥'
-            },
-            'ru': {
-                backLink: '‹ Назад',
-                gridTitle: '👇 Переключить стиль',
-                selectedCount: 'Выбрано {n}',
-                sold: 'продано',
-                views: 'просмотров',
-                cnyLabel: '≈ ¥'
-            },
-            'fr': {
-                backLink: '‹ Retour',
-                gridTitle: '👇 Changer de style',
-                selectedCount: '{n} sélectionné(s)',
-                sold: 'vendus',
-                views: 'vues',
-                cnyLabel: '≈ ¥'
-            },
-            'ar': {
-                backLink: '‹ عودة',
-                gridTitle: '👇 تبديل الأنماط',
-                selectedCount: 'تم اختيار {n}',
-                sold: 'مباع',
-                views: 'مشاهدة',
-                cnyLabel: '≈ ¥'
-            }
-        };
+        // ----- 多语言静态文本（本页只需要返回按钮符号，无需翻译，但保留切换功能） -----
+        // 实际上返回按钮是符号，NEW固定英文，所以语言切换不改变任何可见文字，但保留按钮以兼容之前需求
+        // 以下仅用于演示，不做实际翻译，但保留切换逻辑
 
-        const RATE = 7.2;
-        let selectedIds = new Set();
-        let currentProductId = products.length ? products[0].id : null;
         let currentLang = localStorage.getItem('enny_lang') || 'en';
 
-        function getProductName(product) {
-            return product.name && product.name[currentLang] ? product.name[currentLang] : (product.name && product.name['en'] ? product.name['en'] : 'Unnamed');
-        }
-
-        function getStatic(key, replacements = {}) {
-            const t = staticText[currentLang] || staticText['en'];
-            let text = t[key] || key;
-            for (let k in replacements) {
-                text = text.replace(`{${k}}`, replacements[k]);
-            }
-            return text;
-        }
-
+        // 高亮当前语言
         function setLanguage(lang) {
             currentLang = lang;
             localStorage.setItem('enny_lang', lang);
             document.querySelectorAll('#langGroup button').forEach(btn => {
                 btn.classList.toggle('active-lang', btn.dataset.lang === lang);
             });
-            document.getElementById('backLink').textContent = getStatic('backLink');
-            document.getElementById('gridTitle').textContent = getStatic('gridTitle');
-            renderMain();
-            renderAllItems();
-            updateFooter();
         }
 
-        function renderMain() {
-            const p = getCurrentProduct();
-            if (!p) return;
-            document.getElementById('mainImage').src = p.mainImg;
-            document.getElementById('mainImage').onerror = function() { this.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Crect fill=%22%23ddd%22 width=%22400%22 height=%22400%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 font-size=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3E📷%3C/text%3E%3C/svg%3E'; };
-            document.getElementById('productName').textContent = getProductName(p);
-            document.getElementById('productPrice').innerHTML = `$${p.priceUsd.toFixed(2)} <small>${getStatic('cnyLabel')} ${(p.priceUsd*RATE).toFixed(0)}</small>`;
-            document.getElementById('productMeta').textContent = `🔥 ${p.sales || 0} ${getStatic('sold')} · 👁️ ${p.views || 0} ${getStatic('views')}`;
-            const imgs = p.detailImgs || [p.mainImg];
-            const thumbRow = document.getElementById('thumbRow');
-            thumbRow.innerHTML = imgs.map((src, i) => 
-                `<img src="${src}" class="${i===0?'active-thumb':''}" onclick="changeMainImage('${src}', this)" onerror="this.style.display='none'">`
-            ).join('');
-        }
-
-        function changeMainImage(src, el) {
-            document.getElementById('mainImage').src = src;
-            document.querySelectorAll('.thumb-row img').forEach(img => img.classList.remove('active-thumb'));
-            if (el) el.classList.add('active-thumb');
-        }
-
-        function getCurrentProduct() {
-            return products.find(p => p.id === currentProductId) || products[0];
-        }
-
-        function renderAllItems() {
-            const grid = document.getElementById('allGrid');
-            const sorted = [...products].sort((a, b) => (b.sort || 0) - (a.sort || 0));
-            if (!sorted.length) { grid.innerHTML = '<div class="empty">No items</div>'; return; }
-            grid.innerHTML = sorted.map(p => `
-                <div class="item ${p.id === currentProductId ? 'active-item' : ''} ${selectedIds.has(p.id) ? 'selected' : ''}" onclick="switchProduct('${p.id}')">
-                    <img src="${p.mainImg}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Crect fill=%22%23ddd%22 width=%22400%22 height=%22400%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 font-size=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3E📷%3C/text%3E%3C/svg%3E'" />
-                    <div class="item-name">${getProductName(p)}</div>
-                    <button class="select-badge" onclick="event.stopPropagation(); toggleSelect('${p.id}')">${selectedIds.has(p.id) ? '✓' : '+'}</button>
-                </div>
-            `).join('');
-        }
-
-        function switchProduct(id) {
-            currentProductId = id;
-            renderMain();
-            renderAllItems();
-            updateFooter();
-        }
-
-        function toggleSelect(id) {
-            selectedIds.has(id) ? selectedIds.delete(id) : selectedIds.add(id);
-            renderAllItems();
-            updateFooter();
-        }
-
-        function updateFooter() {
-            const total = products.filter(p => selectedIds.has(p.id)).reduce((s,p) => s + p.priceUsd, 0);
-            document.getElementById('totalUsd').textContent = '$' + total.toFixed(2);
-            document.getElementById('totalCny').textContent = getStatic('cnyLabel') + (total * RATE).toFixed(0);
-            const count = selectedIds.size;
-            document.getElementById('totalCount').textContent = getStatic('selectedCount', {n: count});
-        }
-
+        // 绑定语言切换事件
         document.querySelectorAll('#langGroup button').forEach(btn => {
             btn.addEventListener('click', function() {
                 setLanguage(this.dataset.lang);
             });
         });
+        // 初始化高亮
+        document.querySelectorAll('#langGroup button').forEach(btn => {
+            btn.classList.toggle('active-lang', btn.dataset.lang === currentLang);
+        });
 
-        if (products.length) {
-            document.querySelectorAll('#langGroup button').forEach(btn => {
-                btn.classList.toggle('active-lang', btn.dataset.lang === currentLang);
+        // ----- 渲染商品 -----
+        function renderProducts() {
+            const container = document.getElementById('productContainer');
+            if (!products || products.length === 0) {
+                container.innerHTML = '<div class="empty-hint">暂无商品，请上传图片并在代码中添加数据。</div>';
+                return;
+            }
+
+            // 按 sort 降序排列（新品置顶）
+            const sorted = [...products].sort((a, b) => (b.sort || 0) - (a.sort || 0));
+
+            let html = '';
+            sorted.forEach((p, index) => {
+                // 细节图至少有一张，若没有则使用主图
+                let detailImgs = p.detailImgs && p.detailImgs.length ? p.detailImgs : [p.mainImg];
+                // 最多只取前10张（用户可以控制）
+                if (detailImgs.length > 10) detailImgs = detailImgs.slice(0, 10);
+
+                const detailItems = detailImgs.map(src =>
+                    `<img src="${src}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Crect fill=%22%23ddd%22 width=%22400%22 height=%22400%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 font-size=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3E📷%3C/text%3E%3C/svg%3E'" />`
+                ).join('');
+
+                html += `
+                    <div class="product-group">
+                        <img class="main-img" src="${p.mainImg}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Crect fill=%22%23ddd%22 width=%22400%22 height=%22400%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 font-size=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3E📷%3C/text%3E%3C/svg%3E'" />
+                        <div class="new-label">NEW</div>
+                        <div class="detail-grid">${detailItems}</div>
+                    </div>
+                `;
             });
-            document.getElementById('backLink').textContent = getStatic('backLink');
-            document.getElementById('gridTitle').textContent = getStatic('gridTitle');
-            renderMain();
-            renderAllItems();
-            updateFooter();
-        } else {
-            document.querySelector('.main-img-wrap').innerHTML = '<div class="empty">Upload products first</div>';
+
+            container.innerHTML = html;
         }
+
+        renderProducts();
     </script>
 </body>
 </html>
