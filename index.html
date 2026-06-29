@@ -71,7 +71,6 @@
             .enter-btn { font-size: 17px; padding: 14px 30px; }
         }
 
-        /* ----- 语言切换（右上角） ----- */
         .lang-switcher {
             position: fixed;
             top: 16px;
@@ -108,7 +107,6 @@
 </head>
 <body>
 
-    <!-- 语言切换器 -->
     <div class="lang-switcher" id="langSwitcher">
         <button data-lang="en" class="active-lang">EN</button>
         <button data-lang="zh-CN">简</button>
@@ -122,82 +120,41 @@
         <div class="brand">ENNY CHINA</div>
         <div class="sub" id="subText">WOMEN'S WHOLESALE</div>
         <div class="new-tag" id="newTag">✦ NEW ARRIVALS ✦</div>
+        <!-- 关键：跳转链接改成 /dress.html -->
         <a href=" " class="enter-btn" id="enterBtn">Click to View All New Styles →</a >
     </div>
 
     <script>
-        // ---- 多语言字典 ----
         const translations = {
-            'en': {
-                sub: "WOMEN'S WHOLESALE",
-                newTag: "✦ NEW ARRIVALS ✦",
-                enterBtn: "Click to View All New Styles →"
-            },
-            'zh-CN': {
-                sub: "女装批发",
-                newTag: "✦ 新品到货 ✦",
-                enterBtn: "点击查看全部新款 →"
-            },
-            'zh-TW': {
-                sub: "女裝批發",
-                newTag: "✦ 新品到貨 ✦",
-                enterBtn: "點擊查看全部新款 →"
-            },
-            'ru': {
-                sub: "ОПТОВАЯ ЖЕНСКАЯ ОДЕЖДА",
-                newTag: "✦ НОВИНКИ ✦",
-                enterBtn: "Смотреть все новинки →"
-            },
-            'fr': {
-                sub: "GROSSISTE DE MODE FEMME",
-                newTag: "✦ NOUVEAUTÉS ✦",
-                enterBtn: "Voir tous les nouveaux styles →"
-            },
-            'ar': {
-                sub: "الجملة النسائية",
-                newTag: "✦ وصول جديدة ✦",
-                enterBtn: "عرض جميع الطرازات الجديدة →"
-            }
+            'en': { sub: "WOMEN'S WHOLESALE", newTag: "✦ NEW ARRIVALS ✦", enterBtn: "Click to View All New Styles →" },
+            'zh-CN': { sub: "女装批发", newTag: "✦ 新品到货 ✦", enterBtn: "点击查看全部新款 →" },
+            'zh-TW': { sub: "女裝批發", newTag: "✦ 新品到貨 ✦", enterBtn: "點擊查看全部新款 →" },
+            'ru': { sub: "ОПТОВАЯ ЖЕНСКАЯ ОДЕЖДА", newTag: "✦ НОВИНКИ ✦", enterBtn: "Смотреть все новинки →" },
+            'fr': { sub: "GROSSISTE DE MODE FEMME", newTag: "✦ NOUVEAUTÉS ✦", enterBtn: "Voir tous les nouveaux styles →" },
+            'ar': { sub: "الجملة النسائية", newTag: "✦ وصول جديدة ✦", enterBtn: "عرض جميع الطرازات الجديدة →" }
         };
 
-        // ---- 获取当前语言 ----
-        function getCurrentLang() {
-            return localStorage.getItem('enny_lang') || 'en';
-        }
+        function getCurrentLang() { return localStorage.getItem('enny_lang') || 'en'; }
 
-        // ---- 切换语言 ----
         function setLanguage(lang) {
             localStorage.setItem('enny_lang', lang);
-            applyLanguage(lang);
-            // 更新按钮高亮
+            const t = translations[lang];
+            if (t) {
+                document.getElementById('subText').textContent = t.sub;
+                document.getElementById('newTag').textContent = t.newTag;
+                document.getElementById('enterBtn').textContent = t.enterBtn;
+            }
             document.querySelectorAll('.lang-switcher button').forEach(btn => {
                 btn.classList.toggle('active-lang', btn.dataset.lang === lang);
             });
         }
 
-        // ---- 应用语言到页面 ----
-        function applyLanguage(lang) {
-            const t = translations[lang];
-            if (!t) return;
-            document.getElementById('subText').textContent = t.sub;
-            document.getElementById('newTag').textContent = t.newTag;
-            document.getElementById('enterBtn').textContent = t.enterBtn;
-        }
-
-        // ---- 绑定点击事件 ----
         document.querySelectorAll('.lang-switcher button').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                const lang = this.dataset.lang;
-                setLanguage(lang);
-            });
+            btn.addEventListener('click', function() { setLanguage(this.dataset.lang); });
         });
 
-        // ---- 初始化 ----
         const initialLang = getCurrentLang();
-        applyLanguage(initialLang);
-        document.querySelectorAll('.lang-switcher button').forEach(btn => {
-            btn.classList.toggle('active-lang', btn.dataset.lang === initialLang);
-        });
+        setLanguage(initialLang);
     </script>
 </body>
 </html>
