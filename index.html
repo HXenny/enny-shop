@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
@@ -7,12 +7,13 @@
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, sans-serif; }
         body {
-            background: #1a2332;  /* 深灰蓝底 */
+            background: #1a2332;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 30px;
+            position: relative;
         }
         .container {
             text-align: center;
@@ -23,7 +24,7 @@
             font-size: 48px;
             font-weight: 700;
             letter-spacing: 4px;
-            color: #ff3b9f;        /* 亮粉色 */
+            color: #ff3b9f;
             text-shadow: 0 0 20px rgba(255, 59, 159, 0.4);
             margin-bottom: 6px;
         }
@@ -65,19 +66,138 @@
             color: #1a2332;
             transform: scale(0.95);
         }
-        /* 手机端小屏适配 */
         @media (max-width: 480px) {
             .brand { font-size: 36px; }
             .enter-btn { font-size: 17px; padding: 14px 30px; }
         }
+
+        /* ----- 语言切换（右上角） ----- */
+        .lang-switcher {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            gap: 6px;
+            background: rgba(255,255,255,0.08);
+            padding: 6px 10px;
+            border-radius: 30px;
+            backdrop-filter: blur(6px);
+            z-index: 999;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .lang-switcher button {
+            background: transparent;
+            border: none;
+            color: #8899bb;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .lang-switcher button.active-lang {
+            background: #ff3b9f;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(255,59,159,0.3);
+        }
+        .lang-switcher button:active { transform: scale(0.9); }
     </style>
 </head>
 <body>
+
+    <!-- 语言切换器 -->
+    <div class="lang-switcher" id="langSwitcher">
+        <button data-lang="en" class="active-lang">EN</button>
+        <button data-lang="zh-CN">简</button>
+        <button data-lang="zh-TW">繁</button>
+        <button data-lang="ru">RU</button>
+        <button data-lang="fr">FR</button>
+        <button data-lang="ar">AR</button>
+    </div>
+
     <div class="container">
         <div class="brand">ENNY CHINA</div>
-        <div class="sub">WOMEN'S WHOLESALE</div>
-        <div class="new-tag">✦ NEW 新款 ✦</div>
-        <a href=" " class="enter-btn">点击进入查看全部新款 →</a >
+        <div class="sub" id="subText">WOMEN'S WHOLESALE</div>
+        <div class="new-tag" id="newTag">✦ NEW ARRIVALS ✦</div>
+        <a href=" " class="enter-btn" id="enterBtn">Click to View All New Styles →</a >
     </div>
+
+    <script>
+        // ---- 多语言字典 ----
+        const translations = {
+            'en': {
+                sub: "WOMEN'S WHOLESALE",
+                newTag: "✦ NEW ARRIVALS ✦",
+                enterBtn: "Click to View All New Styles →"
+            },
+            'zh-CN': {
+                sub: "女装批发",
+                newTag: "✦ 新品到货 ✦",
+                enterBtn: "点击查看全部新款 →"
+            },
+            'zh-TW': {
+                sub: "女裝批發",
+                newTag: "✦ 新品到貨 ✦",
+                enterBtn: "點擊查看全部新款 →"
+            },
+            'ru': {
+                sub: "ОПТОВАЯ ЖЕНСКАЯ ОДЕЖДА",
+                newTag: "✦ НОВИНКИ ✦",
+                enterBtn: "Смотреть все новинки →"
+            },
+            'fr': {
+                sub: "GROSSISTE DE MODE FEMME",
+                newTag: "✦ NOUVEAUTÉS ✦",
+                enterBtn: "Voir tous les nouveaux styles →"
+            },
+            'ar': {
+                sub: "الجملة النسائية",
+                newTag: "✦ وصول جديدة ✦",
+                enterBtn: "عرض جميع الطرازات الجديدة →"
+            }
+        };
+
+        // ---- 获取当前语言 ----
+        function getCurrentLang() {
+            return localStorage.getItem('enny_lang') || 'en';
+        }
+
+        // ---- 切换语言 ----
+        function setLanguage(lang) {
+            localStorage.setItem('enny_lang', lang);
+            applyLanguage(lang);
+            // 更新按钮高亮
+            document.querySelectorAll('.lang-switcher button').forEach(btn => {
+                btn.classList.toggle('active-lang', btn.dataset.lang === lang);
+            });
+        }
+
+        // ---- 应用语言到页面 ----
+        function applyLanguage(lang) {
+            const t = translations[lang];
+            if (!t) return;
+            document.getElementById('subText').textContent = t.sub;
+            document.getElementById('newTag').textContent = t.newTag;
+            document.getElementById('enterBtn').textContent = t.enterBtn;
+        }
+
+        // ---- 绑定点击事件 ----
+        document.querySelectorAll('.lang-switcher button').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const lang = this.dataset.lang;
+                setLanguage(lang);
+            });
+        });
+
+        // ---- 初始化 ----
+        const initialLang = getCurrentLang();
+        applyLanguage(initialLang);
+        document.querySelectorAll('.lang-switcher button').forEach(btn => {
+            btn.classList.toggle('active-lang', btn.dataset.lang === initialLang);
+        });
+    </script>
 </body>
 </html>
