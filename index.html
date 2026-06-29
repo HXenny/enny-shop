@@ -7,37 +7,24 @@
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, sans-serif; }
         body { background:#f5f5f7; padding-bottom:80px; }
-        .page { display:none; min-height:100vh; }
-        .page.active { display:block; }
 
-        /* 首页分类入口 */
-        #home { background:white; padding-top:20px; }
-        .home-header { padding:0 16px 16px; text-align:center; border-bottom:1px solid #f0f0f0; }
-        .home-header h1 { font-size:28px; font-weight:700; color:#1a1a1a; letter-spacing:2px; }
-        .home-header p { font-size:14px; color:#888; margin-top:4px; }
-        .category-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; padding:20px 16px; }
-        .category-item { background:#f8f9fa; border-radius:16px; padding:20px 8px; text-align:center; cursor:pointer; transition:0.2s; border:1px solid #f0f0f0; }
-        .category-item:active { transform:scale(0.95); background:#e8e8ed; }
-        .category-item .icon { font-size:36px; display:block; margin-bottom:6px; }
-        .category-item .label { font-size:14px; font-weight:500; color:#1a1a1a; }
-        .category-item .count { font-size:11px; color:#999; }
+        /* 顶部标题 */
+        .header { background:white; padding:16px 20px 10px; text-align:center; border-bottom:1px solid #f0f0f0; position:sticky; top:0; z-index:10; }
+        .header h1 { font-size:24px; font-weight:700; color:#1a1a1a; letter-spacing:2px; }
+        .header p { font-size:13px; color:#999; margin-top:2px; }
 
-        /* 商品列表 */
-        .header-bar { background:white; padding:14px 16px; position:sticky; top:0; z-index:10; display:flex; align-items:center; gap:12px; border-bottom:1px solid #eee; }
-        .header-bar .back { font-size:24px; cursor:pointer; padding:0 4px; }
-        .header-bar .title { font-size:18px; font-weight:600; flex:1; }
+        /* 商品网格（双列） */
         .grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:14px; }
-        .card { background:white; border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.04); border:3px solid transparent; position:relative; }
-        .card.selected { border-color:#007aff; }
-        .card img { width:100%; display:block; aspect-ratio:1/1; object-fit:cover; background:#eee; cursor:pointer; }
+        .card { background:white; border-radius:12px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.04); border:3px solid transparent; position:relative; cursor:pointer; transition:0.15s; }
+        .card.selected { border-color:#007aff; box-shadow:0 4px 12px rgba(0,122,255,0.2); }
+        .card img { width:100%; display:block; aspect-ratio:1/1; object-fit:cover; background:#eee; }
         .card .info { padding:8px 10px 12px; }
         .card .name { font-size:13px; font-weight:500; color:#1a1a1a; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
         .card .price { font-size:15px; font-weight:700; color:#1a1a1a; }
         .card .price small { font-size:11px; font-weight:400; color:#888; margin-left:4px; }
-        .card .meta { font-size:11px; color:#999; margin-top:3px; display:flex; gap:10px; }
-        .card .select-tag { position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.6); color:white; border:none; border-radius:20px; padding:2px 12px; font-size:12px; cursor:pointer; z-index:2; }
+        .card .meta { font-size:11px; color:#999; margin-top:3px; display:flex; gap:12px; }
+        .card .select-tag { position:absolute; top:8px; right:8px; background:rgba(0,0,0,0.55); color:white; border:none; border-radius:20px; padding:2px 12px; font-size:12px; cursor:pointer; z-index:2; }
         .card.selected .select-tag { background:#007aff; }
-        .empty-hint { text-align:center; padding:60px 20px; color:#aaa; grid-column:1/-1; }
 
         /* 详情弹窗 */
         .modal { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.94); z-index:999; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
@@ -45,53 +32,47 @@
         .modal .close { position:absolute; top:20px; right:20px; color:white; font-size:32px; cursor:pointer; z-index:10; }
         .modal .img-box { width:100%; max-width:450px; position:relative; }
         .modal .img-box img { width:100%; aspect-ratio:1/1; object-fit:contain; background:#111; border-radius:12px; }
-        .modal .arrow { position:absolute; top:50%; transform:translateY(-50%); color:rgba(255,255,255,0.5); font-size:36px; padding:0 10px; cursor:pointer; z-index:5; }
+        .modal .arrow { position:absolute; top:50%; transform:translateY(-50%); color:rgba(255,255,255,0.5); font-size:36px; padding:0 10px; cursor:pointer; z-index:5; user-select:none; }
         .modal .arrow-l { left:-5px; } .modal .arrow-r { right:-5px; }
         .modal .thumbs { display:flex; gap:8px; justify-content:center; margin-top:12px; flex-wrap:wrap; }
         .modal .thumbs img { width:44px; height:44px; object-fit:cover; border-radius:6px; border:2px solid transparent; cursor:pointer; }
-        .modal .thumbs img.active { border-color:white; }
+        .modal .thumbs img.active-thumb { border-color:white; }
         .modal .info-box { color:white; text-align:center; padding:14px 10px 10px; width:100%; max-width:450px; }
         .modal .info-box .m-name { font-size:18px; font-weight:600; }
         .modal .info-box .m-price { font-size:16px; color:#aaa; margin:4px 0 6px; }
         .modal .info-box .m-price strong { color:white; font-size:22px; }
         .modal .info-box .m-meta { font-size:14px; color:#ffa500; margin-bottom:10px; }
-        .modal .m-btn { background:#007aff; color:white; border:none; padding:12px 40px; border-radius:30px; font-size:16px; font-weight:600; cursor:pointer; width:100%; max-width:300px; }
+        .modal .m-btn { background:#007aff; color:white; border:none; padding:12px 40px; border-radius:30px; font-size:16px; font-weight:600; cursor:pointer; width:100%; max-width:300px; transition:0.2s; }
         .modal .m-btn.added { background:#34c759; }
 
-        /* 底部结算栏 */
+        /* 底部结算栏（固定） */
         .footer-bar { position:fixed; bottom:0; left:0; right:0; background:white; padding:12px 20px; box-shadow:0 -4px 20px rgba(0,0,0,0.08); display:flex; justify-content:space-between; align-items:center; z-index:20; border-top:1px solid #f0f0f0; }
         .footer-bar .left .usd { font-size:20px; font-weight:700; color:#1a1a1a; }
         .footer-bar .left .cny { font-size:13px; color:#888; }
         .footer-bar .right { background:#f0f0f0; padding:6px 16px; border-radius:20px; font-size:14px; color:#333; }
+
+        /* 空状态 */
+        .empty-hint { text-align:center; padding:60px 20px; color:#aaa; grid-column:1/-1; font-size:15px; }
     </style>
 </head>
 <body>
 
-<!-- ===== 首页：分类入口 ===== -->
-<div id="home" class="page active">
-    <div class="home-header">
-        <h1>👗 ENNY CHINA</h1>
-        <p>点击分类浏览 · 截图底部总价下单</p >
-    </div>
-    <div class="category-grid" id="categoryHomeGrid"></div>
+<!-- ===== 顶部 ===== -->
+<div class="header">
+    <h1>👗 ENNY CHINA</h1>
+    <p>点图片看细节 · 选完截图底部总价</p >
 </div>
 
-<!-- ===== 商品列表页 ===== -->
-<div id="shop" class="page">
-    <div class="header-bar">
-        <span class="back" onclick="goHome()">‹</span>
-        <span class="title" id="shopTitle">全部商品</span>
-    </div>
-    <div class="grid" id="productGrid"></div>
-</div>
+<!-- ===== 商品网格 ===== -->
+<div class="grid" id="productGrid"></div>
 
 <!-- ===== 详情弹窗 ===== -->
 <div class="modal" id="detailModal">
     <span class="close" onclick="closeDetail()">✕</span>
     <div class="img-box">
-        <span class="arrow arrow-l" onclick="changeDetail(-1)">‹</span>
+        <span class="arrow arrow-l" onclick="event.stopPropagation(); changeDetail(-1)">‹</span>
         < img id="modalImg" src="">
-        <span class="arrow arrow-r" onclick="changeDetail(1)">›</span>
+        <span class="arrow arrow-r" onclick="event.stopPropagation(); changeDetail(1)">›</span>
     </div>
     <div class="thumbs" id="thumbWrap"></div>
     <div class="info-box">
@@ -113,20 +94,20 @@
 
 <script>
 // ================================================================
-// ⭐⭐⭐ 你的商品数据库（在这里“上架”产品）⭐⭐⭐
-// 注意：sort 数字越大，展示位置越靠前（新品请填最大数字）
+// ⭐⭐⭐ 你的商品数据（在这里上架新品）⭐⭐⭐
+// sort数字越大越靠前（新品填最大数字）
 // ================================================================
 const products = [
-    // 示例商品（按sort从大到小排列，新品放最上面）
-    { sort: 6, id:'p01', name:'波西米亚印花长裙', category:'print', priceUsd:35.00, sales: 156, views: 823, mainImg:'images/print_01_main.jpg', detailImgs:['images/print_01_1.jpg','images/print_01_2.jpg','images/print_01_3.jpg'] },
-    { sort: 5, id:'s01', name:'百褶半身裙', category:'skirt', priceUsd:18.00, sales: 98, views: 412, mainImg:'images/skirt_01_main.jpg', detailImgs:['images/skirt_01_1.jpg','images/skirt_01_2.jpg'] },
-    { sort: 4, id:'y01', name:'高腰裸感瑜伽裤', category:'yoga', priceUsd:22.80, sales: 203, views: 1205, mainImg:'images/yoga_01_main.jpg', detailImgs:['images/yoga_01_1.jpg'] },
-    { sort: 3, id:'t01', name:'纯棉印花T恤', category:'tshirt', priceUsd:12.00, sales: 345, views: 2100, mainImg:'images/tshirt_01_main.jpg', detailImgs:['images/tshirt_01_1.jpg','images/tshirt_01_2.jpg'] },
-    { sort: 2, id:'d02', name:'泡泡袖淑女裙', category:'dress', priceUsd:32.00, sales: 67, views: 289, mainImg:'images/dress_02_main.jpg', detailImgs:['images/dress_02_1.jpg'] },
-    { sort: 1, id:'d01', name:'法式碎花连衣裙', category:'dress', priceUsd:28.50, sales: 128, views: 556, mainImg:'images/dress_01_main.jpg', detailImgs:['images/dress_01_1.jpg','images/dress_01_2.jpg'] },
-    
-    // ⬇️ 你以后上新品，就复制下面这一行（去掉//注释），粘贴到最上面，改一下数字和图片路径
-    // { sort: 100, id:'new01', name:'你的新款名称', category:'dress', priceUsd:39.99, sales: 0, views: 0, mainImg:'images/新款主图.jpg', detailImgs:['images/细节1.jpg','images/细节2.jpg'] },
+    // ----- 示例商品（你可以删掉换成自己的） -----
+    { sort: 6, id:'p01', name:'波西米亚印花长裙', priceUsd:35.00, sales:156, views:823, mainImg:'images/print_01_main.jpg', detailImgs:['images/print_01_1.jpg','images/print_01_2.jpg','images/print_01_3.jpg'] },
+    { sort: 5, id:'s01', name:'百褶半身裙', priceUsd:18.00, sales:98, views:412, mainImg:'images/skirt_01_main.jpg', detailImgs:['images/skirt_01_1.jpg','images/skirt_01_2.jpg'] },
+    { sort: 4, id:'y01', name:'高腰裸感瑜伽裤', priceUsd:22.80, sales:203, views:1205, mainImg:'images/yoga_01_main.jpg', detailImgs:['images/yoga_01_1.jpg'] },
+    { sort: 3, id:'t01', name:'纯棉印花T恤', priceUsd:12.00, sales:345, views:2100, mainImg:'images/tshirt_01_main.jpg', detailImgs:['images/tshirt_01_1.jpg','images/tshirt_01_2.jpg'] },
+    { sort: 2, id:'d02', name:'泡泡袖淑女裙', priceUsd:32.00, sales:67, views:289, mainImg:'images/dress_02_main.jpg', detailImgs:['images/dress_02_1.jpg'] },
+    { sort: 1, id:'d01', name:'法式碎花连衣裙', priceUsd:28.50, sales:128, views:556, mainImg:'images/dress_01_main.jpg', detailImgs:['images/dress_01_1.jpg','images/dress_01_2.jpg'] },
+
+    // ⬇️ 上新品时复制下面这行，贴到最上面（改数字和图片名）
+    // { sort: 999, id:'new01', name:'你的新款名称', priceUsd:39.99, sales:0, views:0, mainImg:'images/新款主图.jpg', detailImgs:['images/细节1.jpg','images/细节2.jpg'] },
 ];
 // ================================================================
 
@@ -134,53 +115,15 @@ const RATE = 7.2;
 let selectedIds = new Set();
 let currentProduct = null;
 let currentDetailIdx = 0;
-let currentFilter = 'all';
 
-const categoryMap = {
-    'dress': { label:'连衣裙', icon:'👗' },
-    'tshirt': { label:'T恤', icon:'👕' },
-    'yoga': { label:'瑜伽裤', icon:'🧘' },
-    'skirt': { label:'半身裙', icon:'👘' },
-    'print': { label:'印花裙', icon:'🌸' }
-};
-
-// 首页分类
-function renderHome() {
-    const grid = document.getElementById('categoryHomeGrid');
-    grid.innerHTML = Object.keys(categoryMap).map(key => {
-        const count = products.filter(p => p.category === key).length;
-        return `<div class="category-item" onclick="goShop('${key}')">
-            <span class="icon">${categoryMap[key].icon}</span>
-            <div class="label">${categoryMap[key].label}</div>
-            <div class="count">${count} 款</div>
-        </div>`;
-    }).join('');
-}
-
-// 页面切换
-function goShop(category) {
-    currentFilter = category;
-    document.getElementById('home').classList.remove('active');
-    document.getElementById('shop').classList.add('active');
-    document.getElementById('shopTitle').textContent = categoryMap[category]?.label || '全部商品';
-    renderProducts(category);
-}
-function goHome() {
-    document.getElementById('shop').classList.remove('active');
-    document.getElementById('home').classList.add('active');
-}
-
-// 渲染商品（按sort从大到小排，新品自动置顶）
-function renderProducts(category) {
+// ----- 渲染所有商品（按sort从大到小排） -----
+function renderProducts() {
     const grid = document.getElementById('productGrid');
-    let list = category === 'all' ? products : products.filter(p => p.category === category);
-    if (!list.length) { grid.innerHTML = '<div class="empty-hint">暂无商品</div>'; return; }
-    // 按 sort 降序排列（数字越大越靠前）
-    list = [...list].sort((a, b) => (b.sort || 0) - (a.sort || 0));
-
-    grid.innerHTML = list.map(p => `
-        <div class="card ${selectedIds.has(p.id) ? 'selected' : ''}">
-            < img src="${p.mainImg}" alt="${p.name}" loading="lazy" onclick="openDetail('${p.id}')" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Crect fill=%22%23ddd%22 width=%22400%22 height=%22400%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 font-size=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3E📷%3C/text%3E%3C/svg%3E'" />
+    const sorted = [...products].sort((a, b) => (b.sort || 0) - (a.sort || 0));
+    if (!sorted.length) { grid.innerHTML = '<div class="empty-hint">暂无商品，请上传图片</div>'; return; }
+    grid.innerHTML = sorted.map(p => `
+        <div class="card ${selectedIds.has(p.id) ? 'selected' : ''}" onclick="openDetail('${p.id}')">
+            < img src="${p.mainImg}" alt="${p.name}" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Crect fill=%22%23ddd%22 width=%22400%22 height=%22400%22/%3E%3Ctext x=%2250%%22 y=%2250%%22 font-size=%2220%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22%3E📷%3C/text%3E%3C/svg%3E'" />
             <div class="info">
                 <div class="name">${p.name}</div>
                 <div class="price">$${p.priceUsd.toFixed(2)} <small>≈ ¥${(p.priceUsd*RATE).toFixed(0)}</small></div>
@@ -192,16 +135,16 @@ function renderProducts(category) {
     updateFooter();
 }
 
-// 选中逻辑
+// ----- 选中/取消 -----
 function toggleSelect(id) {
     selectedIds.has(id) ? selectedIds.delete(id) : selectedIds.add(id);
-    renderProducts(currentFilter);
+    renderProducts();
     if (currentProduct && currentProduct.id === id) updateModalBtn();
     updateFooter();
 }
 function modalToggle() { if (currentProduct) toggleSelect(currentProduct.id); }
 
-// 底部更新
+// ----- 底部结算栏更新 -----
 function updateFooter() {
     const total = products.filter(p => selectedIds.has(p.id)).reduce((s,p) => s + p.priceUsd, 0);
     document.getElementById('totalUsd').textContent = '$' + total.toFixed(2);
@@ -209,7 +152,7 @@ function updateFooter() {
     document.getElementById('totalCount').textContent = '已选 ' + selectedIds.size + ' 件';
 }
 
-// 详情弹窗
+// ----- 详情弹窗 -----
 function openDetail(id) {
     currentProduct = products.find(p => p.id === id);
     if (!currentProduct) return;
@@ -221,19 +164,23 @@ function openDetail(id) {
     document.getElementById('modalPrice').textContent = '$' + currentProduct.priceUsd.toFixed(2);
     document.getElementById('modalCny').textContent = '≈ ¥' + (currentProduct.priceUsd * RATE).toFixed(0);
     document.getElementById('modalMeta').textContent = '🔥 ' + (currentProduct.sales || 0) + ' 销量 · 👁️ ' + (currentProduct.views || 0) + ' 浏览';
+    // 缩略图
     const imgs = currentProduct.detailImgs || [currentProduct.mainImg];
     const wrap = document.getElementById('thumbWrap');
     if (imgs.length > 1) {
-        wrap.innerHTML = imgs.map((src, i) => `< img src="${src}" onclick="changeDetailTo(${i})" onerror="this.style.display='none'">`).join('');
+        wrap.innerHTML = imgs.map((src, i) => `< img src="${src}" onclick="event.stopPropagation(); changeDetailTo(${i})" onerror="this.style.display='none'">`).join('');
         wrap.style.display = 'flex';
     } else { wrap.style.display = 'none'; }
     updateModalBtn();
 }
-function closeDetail() { document.getElementById('detailModal').classList.remove('active'); document.body.style.overflow = ''; }
+function closeDetail() { 
+    document.getElementById('detailModal').classList.remove('active'); 
+    document.body.style.overflow = ''; 
+}
 function showDetail() {
     const imgs = currentProduct.detailImgs || [currentProduct.mainImg];
     document.getElementById('modalImg').src = imgs[currentDetailIdx] || currentProduct.mainImg;
-    document.querySelectorAll('#thumbWrap img').forEach((el, i) => el.classList.toggle('active', i === currentDetailIdx));
+    document.querySelectorAll('#thumbWrap img').forEach((el, i) => el.classList.toggle('active-thumb', i === currentDetailIdx));
 }
 function changeDetail(dir) {
     const imgs = currentProduct.detailImgs || [currentProduct.mainImg];
@@ -243,13 +190,21 @@ function changeDetail(dir) {
 function changeDetailTo(idx) { currentDetailIdx = idx; showDetail(); }
 function updateModalBtn() {
     const btn = document.getElementById('modalBtn');
-    if (selectedIds.has(currentProduct.id)) { btn.textContent = '✔ 已加入'; btn.classList.add('added'); } 
-    else { btn.textContent = '➕ 加入清单'; btn.classList.remove('added'); }
+    if (selectedIds.has(currentProduct.id)) { 
+        btn.textContent = '✔ 已加入清单'; 
+        btn.classList.add('added'); 
+    } else { 
+        btn.textContent = '➕ 加入清单'; 
+        btn.classList.remove('added'); 
+    }
 }
-document.getElementById('detailModal').addEventListener('click', function(e) { if (e.target === this) closeDetail(); });
+// 点击弹窗背景关闭
+document.getElementById('detailModal').addEventListener('click', function(e) { 
+    if (e.target === this) closeDetail(); 
+});
 
-renderHome();
-renderProducts('all');
+// ----- 启动 -----
+renderProducts();
 </script>
 </body>
 </html>
