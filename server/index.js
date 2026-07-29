@@ -37,5 +37,8 @@ app.patch('/api/admin/orders/:id',auth,admin,async(req,res,next)=>{try{const r=a
 app.get('/api/admin/stats',auth,admin,async(req,res,next)=>{try{const [a,b,c,d]=await Promise.all([q('SELECT count(*)::int AS total FROM page_visits'),q('SELECT COALESCE(sum(duration_seconds),0)::int AS seconds FROM page_visits'),q('SELECT count(*)::int AS total FROM users'),q('SELECT count(*)::int AS total FROM orders')]);res.json({visits:a.rows[0].total,durationSeconds:b.rows[0].seconds,users:c.rows[0].total,orders:d.rows[0].total});}catch(e){next(e);}});
 app.use(express.static(path.join(__dirname,'..','dist')));app.get('*',(req,res)=>res.sendFile(path.join(__dirname,'..','dist','index.html')));
 app.use((err,req,res,next)=>{console.error(err);res.status(err.status||500).json({error:err.message||'Server error'});});
-if (process.env.NODE_ENV !== 'test') app.listen(process.env.PORT||3000,()=>console.log(`Enny China running on ${process.env.PORT||3000}`));
+if (process.env.NODE_ENV !== 'test') {
+  if (!process.env.PORT) throw new Error('PORT environment variable is required');
+  app.listen(process.env.PORT,()=>console.log(`Enny China running on ${process.env.PORT}`));
+}
 export default app;
